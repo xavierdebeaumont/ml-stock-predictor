@@ -39,10 +39,13 @@ def load_data(request):
         l['ticker'] = ls_ticker
     table_rows = len(table_data)
 
+    # Get the bucket name from the environment variable
+    bucket_name = os.getenv('BUCKET_NAME')
+
     # Create CSV and upload to GCS bucket
     dt_string = datetime.now().strftime("%Y-%m-%d_%H%M")
     csv_file_name = ls_ticker + '_' + dt_string + '.csv'
-    upload_csv_gcs(table_data, 'your-gcs-bucket-name', csv_file_name)
+    upload_csv_gcs(table_data, bucket_name, csv_file_name)
 
     response = {
         "Rows": table_rows,
