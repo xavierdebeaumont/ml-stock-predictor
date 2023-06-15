@@ -29,3 +29,8 @@ variable "storage_class" {
   default     = "STANDARD"
   type        = string
 }
+
+variable "local_cloud_function_path" {
+    description = "Path to the local cloud function zip"
+    type = string
+}

@@ -32,37 +32,28 @@ resource "google_storage_bucket" "bucket" {
     }
 }
 
-resource "google_cloud_scheduler_job" "my_scheduler_job" {
-  name        = "my-scheduler-job"
+resource "google_cloudfunctions_function" "stock_data_function" {
+  name        = "stock-data-function"
+  description = "Cloud Function to retrieve and ingest stock data"
+  runtime     = "python310"
+  entry_point = "load_data"
+  source_archive_bucket = "${local.data_lake_bucket}_${var.project}"
+  source_archive_object = var.local_cloud_function_path
+  
+  environment_variables = {
+    "BUCKET_NAME" = "${local.data_lake_bucket}_${var.project}"
+  }
+
+  trigger_http = true
+}
+
+resource "google_cloud_scheduler_job" "scheduler_job" {
+  name        = "daily-scheduler-job"
   description = "Daily Cloud Function Trigger"
   schedule    = "0 0 * * *"
   time_zone   = "UTC"
-  target      = google_cloudfunctions_function.my_function.name
-
-  pubsub_target {
-    topic_name = "projects/your-project-id/topics/my-topic"
-    data       = ""
-  }
-}
-
-resource "google_cloudfunctions_function" "my_function" {
-  name        = "my-function"
-  description = "My Cloud Function"
-  runtime     = "python310"
-
-  source_repository {
-    url = "https://github.com/your-repo/my-function"
-  }
-
-  event_trigger {
-    event_type = "google.pubsub.topic.publish"
-    resource   = "projects/your-project-id/topics/my-topic"
-  }
-
-  available_memory_mb = 128
-  timeout             = "60s"
-
-  environment_variables = {
-    VAR_NAME = "value"
+  http_target {
+    uri = google_cloudfunctions_function.stock_data_function.https_trigger_url
+    http_method = "POST"
   }
 }
