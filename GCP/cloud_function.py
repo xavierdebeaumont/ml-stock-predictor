@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from google.cloud import storage
 import csv
 from io import StringIO
+import os
 
 ls_ticker = 'AI.PA'
 yahoo_financials = YahooFinancials(ls_ticker)
