@@ -1,5 +1,7 @@
 locals {
   data_lake_bucket = "data_lake"
+  credentials = jsondecode(file(var.credentials))
+  service_account_email = local.credentials.client_email
 }
 
 variable "project" {
@@ -9,13 +11,13 @@ variable "project" {
 
 variable "region" {
   description = "Your project region"
-  default     = "europe-west9"
+  default     = "europe-west6"
   type        = string
 }
 
 variable "zone" {
   description = "Your project zone"
-  default     = "europe-west9-a"
+  default     = "europe-west6-a"
   type        = string
 }
 

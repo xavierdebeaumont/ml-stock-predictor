@@ -9,27 +9,34 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
-  region  = var.region
-  zone    = var.zone
-  credentials = file(var.credentials)  # Use this if you do not want to set env-var GOOGLE_APPLICATION_CREDENTIALS
+  project      = var.project
+  region       = var.region
+  zone         = var.zone
+  credentials  = file(var.credentials)
 }
 
 resource "google_storage_bucket" "bucket" {
-    name = "${local.data_lake_bucket}_${var.project}"
-    location = var.region
-    force_destroy = true
+  name                  = "${local.data_lake_bucket}_${var.project}"
+  location              = var.region
+  force_destroy         = true
+  uniform_bucket_level_access = true
 
-    uniform_bucket_level_access = true
-
-    lifecycle_rule {
-      action {
-        type = "Delete"
-      }
-      condition {
-        age = 30 # days
-      }
+  lifecycle_rule {
+    action {
+      type = "Delete"
     }
+    condition {
+      age = 30 # days
+    }
+  }
+}
+
+resource "google_storage_bucket_object" "cloud_function_zip" {
+  name   = "cloud_function.zip"
+  bucket = google_storage_bucket.bucket.name
+  source = var.local_cloud_function_path
+
+  depends_on = [google_storage_bucket.bucket]
 }
 
 resource "google_cloudfunctions_function" "stock_data_function" {
@@ -37,14 +44,16 @@ resource "google_cloudfunctions_function" "stock_data_function" {
   description = "Cloud Function to retrieve and ingest stock data"
   runtime     = "python310"
   entry_point = "load_data"
-  source_archive_bucket = "${local.data_lake_bucket}_${var.project}"
-  source_archive_object = var.local_cloud_function_path
-  
+  source_archive_bucket = google_storage_bucket.bucket.name
+  source_archive_object = google_storage_bucket_object.cloud_function_zip.name
+
   environment_variables = {
-    "BUCKET_NAME" = "${local.data_lake_bucket}_${var.project}"
+    "BUCKET_NAME" = google_storage_bucket.bucket.name
   }
 
   trigger_http = true
+
+  depends_on = [google_storage_bucket_object.cloud_function_zip]
 }
 
 resource "google_cloud_scheduler_job" "scheduler_job" {
@@ -52,8 +61,15 @@ resource "google_cloud_scheduler_job" "scheduler_job" {
   description = "Daily Cloud Function Trigger"
   schedule    = "0 0 * * *"
   time_zone   = "UTC"
+
   http_target {
-    uri = google_cloudfunctions_function.stock_data_function.https_trigger_url
-    http_method = "POST"
+    uri          = google_cloudfunctions_function.stock_data_function.https_trigger_url
+    http_method  = "POST"
+
+    oidc_token {
+      service_account_email = local.service_account_email
+    }
   }
+
+  depends_on = [google_cloudfunctions_function.stock_data_function]
 }
