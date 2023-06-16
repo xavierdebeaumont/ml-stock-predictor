@@ -34,7 +34,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "cloud_function_zip" {
   name   = "cloud_function.zip"
   bucket = google_storage_bucket.bucket.name
-  source = var.local_cloud_function_path
+  source = local.local_cloud_function_path
 
   depends_on = [google_storage_bucket.bucket]
 }

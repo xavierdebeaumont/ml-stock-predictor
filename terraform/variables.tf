@@ -1,5 +1,6 @@
 locals {
   data_lake_bucket = "data_lake"
+  local_cloud_function_path = "../GCP/cloud_function.zip"
   credentials = jsondecode(file(var.credentials))
   service_account_email = local.credentials.client_email
 }
@@ -30,9 +31,4 @@ variable "storage_class" {
   description = "Storage class type for your bucket"
   default     = "STANDARD"
   type        = string
-}
-
-variable "local_cloud_function_path" {
-    description = "Path to the local cloud function zip"
-    type = string
 }
