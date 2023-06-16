@@ -3,6 +3,7 @@ locals {
   local_cloud_function_path = "../GCP/cloud_function.zip"
   credentials = jsondecode(file(var.credentials))
   service_account_email = local.credentials.client_email
+  pubsub_topic = "event_file"
 }
 
 variable "project" {
