@@ -2,7 +2,7 @@ CREATE OR REPLACE STORAGE INTEGRATION gcs_integration
   TYPE = EXTERNAL_STAGE
   STORAGE_PROVIDER = GCS
   ENABLED = TRUE
-  STORAGE_ALLOWED_LOCATIONS = ('gcs://data_lake_datatalks-386314/stocks/');
+  STORAGE_ALLOWED_LOCATIONS = ('gcs://data_lake_datatalks-386314/');
 
 DESC STORAGE INTEGRATION gcs_integration;
 
@@ -17,11 +17,11 @@ CREATE OR REPLACE FILE FORMAT csv
  CREATE OR REPLACE STAGE price_pred_gcs_stage
  storage_integration = gcs_integration
  file_format = csv
- url = 'gcs://data_lake_datatalks-386314/stocks/';
+ url = 'gcs://data_lake_datatalks-386314/';
 
  list @price_pred_gcs_stage;
 
-CREATE NOTIFICATION INTEGRATION my_notification_int
+CREATE OR REPLACE NOTIFICATION INTEGRATION my_notification_int
   TYPE = QUEUE
   NOTIFICATION_PROVIDER = GCP_PUBSUB
   ENABLED = true
@@ -29,7 +29,7 @@ CREATE NOTIFICATION INTEGRATION my_notification_int
 
 DESC NOTIFICATION INTEGRATION my_notification_int;
 
-create or replace pipe get_stocks_data_pipe
+CREATE OR REPLACE PIPE get_stocks_data_pipe
  auto_ingest=true
  INTEGRATION = 'MY_NOTIFICATION_INT'
  as
@@ -37,5 +37,7 @@ create or replace pipe get_stocks_data_pipe
  file_format=csv
  pattern = '.*csv.*'
  on_error = 'Continue';
+
+SHOW PIPES;
 
 select count(*) from historical_prices order by date desc;
