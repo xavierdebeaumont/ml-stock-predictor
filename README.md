@@ -2,7 +2,11 @@
 
 ## Project
 
-The project will take data from the yahoofincancial api. The data will be fetched every day for the day before then stored in a gcs. Then data will be copy into snowflake through a snowpipe runned with pub/sub. We will try to analyze trendings the data, build a machine learning model and serve it in a streamlit webapp.
+The project will take data from the yahoofinancial api. The data will be fetched every day for the day before then stored in a gcs. Then data will be copy into snowflake through a snowpipe runned with pub/sub. We will try to analyze the data, build a machine learning model to predict futur trends and serve it through a streamlit webapp.
+
+## Architecture
+
+![architecture](media/stock-prediction-architecture.png)
 
 ## Tools & Technologies
 
