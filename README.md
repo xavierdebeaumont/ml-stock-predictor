@@ -6,19 +6,17 @@ The project will take data from the yahoofincancial api. The data will be fetche
 
 ## Tools & Technologies
 
-**- Cloud infrastructure:** Created the cloud infra with terraform.
-
-**- Data collection:** Automatically download the stock historical prices data in csv format and save it GCS bucket.
-
-**- Data storage:** Store the data in a Snowflake data warehouse by creating data pipe between GCP and Snowflake.
-
-**- Data Extraction:** Extract & Pre-process the data using Python and perform basic Exploratory Data Analysis.
-
-**- Machine Learning:** Model development: Develop a machine learning model, Train the model on historical data, Evaluate the model and perform hyper parameter tuning
-
-**- Machine Learning:** Model deployment: Deploy the final model on Snowflake.
-
-**- Web App development:** Build a web app using Streamlit and Python to interact with the deployed model and display the predictions.
+- Cloud - [**Google Cloud Platform**](https://cloud.google.com)
+- Infrastructure as Code software - [**Terraform**](https://www.terraform.io)
+- Orchestration - [**Cloud Scheduler**](https://cloud.google.com/scheduler/)
+- Transformation - [**Pandas**](https://pandas.pydata.org/)
+- Data Lake - [**Google Cloud Storage**](https://cloud.google.com/storage)
+- Ingestion - [**Snowpipe**](https://docs.snowflake.com/en/user-guide/data-load-snowpipe-intro)
+- Data Warehouse - [**Snowflake**](https://www.snowflake.com/en/)
+- Exploratory Analysis - [**Plotly**](https://plotly.com/graphing-libraries/)
+- Machine Learning Model - [**Prophet**](https://facebook.github.io/prophet/)
+- Data Visualization - [**Streamlit**](https://streamlit.io/)
+- Language - [**Python**](https://www.python.org)
 
 ## Webapp
 
